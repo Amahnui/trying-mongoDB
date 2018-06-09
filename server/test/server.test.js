@@ -150,25 +150,29 @@ describe('PATCH /todos/:id', () => {
     var hexId = todos[0]._id.toHexString();
     var text = 'this is some new test';
     request(app)
-    .patch(`/todo/${hexId}`).send({text, completed: true})
-    .expect(202)
+    .patch(`/todo/${hexId}`)
+    .send({
+      completed: true,
+      text
+    })
+    //.expect(202)
     .expect((res) =>{
-      expect(res.body.todo.text).toBe(text);
+      expect(res.body.todo.text).toBe({text});
       expect(res.body.todo.completed).toBe(true);
-      expect(res.body.todo.completedAt).toBeA(Number);
+      expect(typeof res.body.todo.completedAt).toBeA(Number);
     }).end(done);
-
   });
+
   it('should clear completedAt when todo is not completed', (done) =>{
     var hexId = todos[1]._id.toHexString();
     var sText = 'this isthe second time';
     request(app)
     .patch(`/todo/${hexId}`).send({sText, completed: false})
-    .expect(202)
+    //.expect(200)
     .expect((res) =>{
       expect(res.body.todo.text).toBe(text);
       expect(res.body.todo.completed).toBe(false);
-      expect(res.body.todo.completedAt).toNotExist();
+      expect(res.body.todo.completedAt).toBeFalsy();
     }).end(done);
 
   });
